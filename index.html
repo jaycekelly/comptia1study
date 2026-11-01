@@ -4952,6 +4952,169 @@
   flex-shrink: 0;
 }
 
+  
+/* -------------------------------------------------------------
+   MOBILE TOUCH & ERGONOMIC NAVIGATION DOCK
+   ------------------------------------------------------------- */
+.mobile-nav-dock {
+  display: none;
+}
+
+/* Ensure tab bar scrolls horizontally on mobile devices */
+.mode-switch-group {
+  overflow-x: auto !important;
+  white-space: nowrap !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+}
+.mode-switch-group::-webkit-scrollbar {
+  display: none !important;
+}
+.mode-tab-btn {
+  flex-shrink: 0 !important;
+}
+
+/* Question card swipe animation classes */
+.swipe-anim-left {
+  animation: swipeLeft 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.swipe-anim-right {
+  animation: swipeRight 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes swipeLeft {
+  0% { transform: translateX(24px); opacity: 0.6; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes swipeRight {
+  0% { transform: translateX(-24px); opacity: 0.6; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Mobile Viewport Rules (<= 768px) */
+@media (max-width: 768px) {
+  /* Push bottom content above the fixed dock when dock is active */
+  body.has-active-mobile-dock {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 12px)) !important;
+  }
+
+  body.has-active-mobile-dock #app-container {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom, 12px)) !important;
+  }
+
+  .mobile-nav-dock.visible-mode {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(62px + env(safe-area-inset-bottom, 10px));
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 10px)) 16px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .mobile-dock-btn {
+    flex: 1;
+    max-width: 125px;
+    height: 46px;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s ease;
+  }
+
+  .mobile-dock-btn:active {
+    transform: scale(0.96);
+    background: var(--bg-surface-elevated);
+  }
+
+  .mobile-dock-btn:disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .mobile-dock-btn-next {
+    background: var(--accent-sky);
+    color: #0f172a;
+    border-color: var(--accent-sky);
+    font-weight: 800;
+  }
+
+  .mobile-dock-btn-next.highlight-next {
+    animation: dock-pulse 1.8s infinite alternate;
+  }
+
+  @keyframes dock-pulse {
+    from {
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+      transform: scale(1);
+    }
+    to {
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.9);
+      transform: scale(1.02);
+    }
+  }
+
+  .mobile-dock-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .mobile-dock-counter {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .mobile-dock-flag-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface-subtle);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .mobile-dock-flag-btn:active {
+    transform: scale(0.92);
+  }
+
+  .mobile-dock-flag-btn.flagged {
+    color: #fbbf24;
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.18);
+  }
+}
+
   </style>
 </head>
 <body>
@@ -12730,6 +12893,351 @@ if (document.readyState === 'loading') {
   initExamReadinessModule();
 }
 
+
+
+/* -------------------------------------------------------------
+   MOBILE TOUCH ERGONOMICS & NAVIGATION CONTROLLER
+   ------------------------------------------------------------- */
+let touchStartX = 0;
+let touchStartY = 0;
+let touchStartTime = 0;
+let touchTarget = null;
+
+function initMobileNavigation() {
+  setupMobileDockEvents();
+  setupTouchSwipeEvents();
+  setupQuestionRenderHooks();
+  updateMobileDockState();
+}
+
+function getActiveQuestionMode() {
+  const activeTab = document.querySelector('.mode-tab-btn.active');
+  if (!activeTab) return null;
+
+  if (activeTab.id === 'tab-drill') return 'drill';
+  if (activeTab.id === 'tab-domains') return 'domains';
+  if (activeTab.id === 'tab-exam') {
+    const activeExamCard = document.getElementById('exam-active-card');
+    if (activeExamCard && window.getComputedStyle(activeExamCard).display !== 'none') {
+      return 'exam';
+    }
+    return null;
+  }
+  if (activeTab.id === 'tab-smart') {
+    const smartPlayer = document.getElementById('smart-screen-player');
+    if (smartPlayer && window.getComputedStyle(smartPlayer).display !== 'none') {
+      return 'smart';
+    }
+    return null;
+  }
+
+  return null;
+}
+
+function scrollToActiveQuestionTop() {
+  let targetEl = null;
+  const mode = getActiveQuestionMode();
+
+  if (mode === 'drill') {
+    targetEl = document.getElementById('drill-question-container');
+  } else if (mode === 'domains') {
+    targetEl = document.getElementById('domain-question-container');
+  } else if (mode === 'exam') {
+    targetEl = document.getElementById('exam-question-card');
+  } else if (mode === 'smart') {
+    targetEl = document.querySelector('.smart-card-area');
+  }
+
+  if (targetEl) {
+    const yOffset = -72; // Header compensation
+    const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    if (window.pageYOffset > y) {
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    }
+  }
+}
+
+function applySwipeAnimation(direction) {
+  let container = null;
+  const mode = getActiveQuestionMode();
+
+  if (mode === 'drill') container = document.getElementById('drill-question-container');
+  else if (mode === 'domains') container = document.getElementById('domain-question-container');
+  else if (mode === 'exam') container = document.getElementById('exam-question-card');
+  else if (mode === 'smart') container = document.querySelector('.smart-card-area');
+
+  if (container) {
+    const animClass = direction === 1 ? 'swipe-anim-left' : 'swipe-anim-right';
+    container.classList.remove('swipe-anim-left', 'swipe-anim-right');
+    void container.offsetWidth; // Force reflow
+    container.classList.add(animClass);
+    setTimeout(() => container.classList.remove(animClass), 220);
+  }
+}
+
+function navigateQuestion(direction) {
+  const mode = getActiveQuestionMode();
+  if (!mode) return;
+
+  if (mode === 'drill') {
+    if (direction === 1 && typeof drillState !== 'undefined') {
+      if (drillState.currentIndex < drillState.activeQuestions.length - 1) {
+        drillState.currentIndex++;
+        applySwipeAnimation(1);
+        if (typeof renderCurrentDrillQuestion === 'function') renderCurrentDrillQuestion();
+        scrollToActiveQuestionTop();
+      }
+    } else if (direction === -1 && typeof drillState !== 'undefined') {
+      if (drillState.currentIndex > 0) {
+        drillState.currentIndex--;
+        applySwipeAnimation(-1);
+        if (typeof renderCurrentDrillQuestion === 'function') renderCurrentDrillQuestion();
+        scrollToActiveQuestionTop();
+      }
+    }
+  } else if (mode === 'domains') {
+    if (direction === 1 && typeof domainState !== 'undefined') {
+      if (domainState.currentIndex < domainState.activeQuestions.length - 1) {
+        domainState.currentIndex++;
+        applySwipeAnimation(1);
+        if (typeof renderCurrentDomainQuestion === 'function') renderCurrentDomainQuestion();
+        scrollToActiveQuestionTop();
+      }
+    } else if (direction === -1 && typeof domainState !== 'undefined') {
+      if (domainState.currentIndex > 0) {
+        domainState.currentIndex--;
+        applySwipeAnimation(-1);
+        if (typeof renderCurrentDomainQuestion === 'function') renderCurrentDomainQuestion();
+        scrollToActiveQuestionTop();
+      }
+    }
+  } else if (mode === 'exam') {
+    if (direction === 1 && typeof examState !== 'undefined') {
+      if (examState.currentIndex < examState.pool.length - 1) {
+        examState.currentIndex++;
+        applySwipeAnimation(1);
+        if (typeof renderCurrentExamQuestion === 'function') renderCurrentExamQuestion();
+        scrollToActiveQuestionTop();
+      }
+    } else if (direction === -1 && typeof examState !== 'undefined') {
+      if (examState.currentIndex > 0) {
+        examState.currentIndex--;
+        applySwipeAnimation(-1);
+        if (typeof renderCurrentExamQuestion === 'function') renderCurrentExamQuestion();
+        scrollToActiveQuestionTop();
+      }
+    }
+  } else if (mode === 'smart') {
+    if (direction === 1 && typeof advanceSmartCard === 'function') {
+      applySwipeAnimation(1);
+      advanceSmartCard();
+      scrollToActiveQuestionTop();
+    }
+  }
+
+  updateMobileDockState();
+}
+
+function toggleActiveModeFlag() {
+  const mode = getActiveQuestionMode();
+  if (mode === 'drill' && typeof drillState !== 'undefined') {
+    const q = drillState.activeQuestions[drillState.currentIndex];
+    if (q && typeof toggleFlag === 'function') {
+      toggleFlag(q.id);
+      if (typeof renderCurrentDrillQuestion === 'function') renderCurrentDrillQuestion();
+    }
+  } else if (mode === 'domains' && typeof domainState !== 'undefined') {
+    const q = domainState.activeQuestions[domainState.currentIndex];
+    if (q && typeof toggleDomainFlag === 'function') {
+      toggleDomainFlag(q.id);
+    }
+  } else if (mode === 'exam' && typeof toggleExamFlag === 'function') {
+    toggleExamFlag();
+  }
+  updateMobileDockState();
+}
+
+function updateMobileDockState() {
+  const dock = document.getElementById('mobile-nav-dock');
+  if (!dock) return;
+
+  const mode = getActiveQuestionMode();
+  if (!mode) {
+    dock.classList.remove('visible-mode');
+    document.body.classList.remove('has-active-mobile-dock');
+    return;
+  }
+
+  // Display dock
+  dock.classList.add('visible-mode');
+  document.body.classList.add('has-active-mobile-dock');
+
+  const btnPrev = document.getElementById('mobile-dock-prev');
+  const btnNext = document.getElementById('mobile-dock-next');
+  const counterEl = document.getElementById('mobile-dock-counter');
+  const flagBtn = document.getElementById('mobile-dock-flag');
+
+  let curIdx = 0;
+  let totalCount = 0;
+  let isFlagged = false;
+  let isAnswered = false;
+
+  if (mode === 'drill' && typeof drillState !== 'undefined') {
+    curIdx = drillState.currentIndex;
+    totalCount = drillState.activeQuestions.length;
+    const q = drillState.activeQuestions[curIdx];
+    if (q) {
+      isFlagged = typeof appState !== 'undefined' && Array.isArray(appState.flagged) && appState.flagged.includes(q.id);
+      isAnswered = typeof appState !== 'undefined' && appState.answered && appState.answered[q.id] !== undefined;
+    }
+  } else if (mode === 'domains' && typeof domainState !== 'undefined') {
+    curIdx = domainState.currentIndex;
+    totalCount = domainState.activeQuestions.length;
+    const q = domainState.activeQuestions[curIdx];
+    if (q) {
+      isFlagged = typeof appState !== 'undefined' && Array.isArray(appState.flagged) && appState.flagged.includes(q.id);
+      isAnswered = typeof appState !== 'undefined' && appState.answered && appState.answered[q.id] !== undefined;
+    }
+  } else if (mode === 'exam' && typeof examState !== 'undefined') {
+    curIdx = examState.currentIndex;
+    totalCount = examState.pool.length;
+    const q = examState.pool[curIdx];
+    if (q) {
+      isFlagged = examState.flagged && examState.flagged.has(q.id);
+      isAnswered = examState.answers && examState.answers[q.id] !== undefined;
+    }
+  } else if (mode === 'smart' && typeof smartReviewState !== 'undefined') {
+    curIdx = smartReviewState.currentIndex;
+    totalCount = smartReviewState.queue.length;
+    isAnswered = smartReviewState.answered;
+    isFlagged = false;
+  }
+
+  // Update UI components
+  if (counterEl) {
+    counterEl.textContent = totalCount > 0 ? `${curIdx + 1} / ${totalCount}` : '--';
+  }
+
+  if (btnPrev) {
+    btnPrev.disabled = curIdx === 0 || mode === 'smart';
+  }
+
+  if (btnNext) {
+    btnNext.disabled = totalCount === 0 || curIdx >= totalCount - 1;
+    btnNext.classList.toggle('highlight-next', Boolean(isAnswered));
+  }
+
+  if (flagBtn) {
+    flagBtn.style.display = (mode === 'smart') ? 'none' : 'flex';
+    flagBtn.classList.toggle('flagged', Boolean(isFlagged));
+  }
+}
+
+function setupMobileDockEvents() {
+  document.getElementById('mobile-dock-prev')?.addEventListener('click', () => navigateQuestion(-1));
+  document.getElementById('mobile-dock-next')?.addEventListener('click', () => navigateQuestion(1));
+  document.getElementById('mobile-dock-flag')?.addEventListener('click', () => toggleActiveModeFlag());
+}
+
+function isSwipeIgnoredTarget(target) {
+  if (!target || typeof target.closest !== 'function') return false;
+  if (target.closest('.mode-switch-group') ||
+      target.closest('pre') ||
+      target.closest('code') ||
+      target.closest('.router-gui-window') ||
+      target.closest('.spd-arena-card') ||
+      target.closest('.cs-card') ||
+      target.closest('#mobile-nav-dock')) {
+    return true;
+  }
+  return false;
+}
+
+function setupTouchSwipeEvents() {
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+      touchTarget = e.target;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    if (e.changedTouches.length === 1) {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchEndTime = Date.now();
+
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+      const elapsedTime = touchEndTime - touchStartTime;
+
+      // Ignore long presses (> 600ms) or slow drags
+      if (elapsedTime > 600) return;
+
+      // Ignore if vertical scrolling was dominant (deltaY > 0.75 * deltaX)
+      if (Math.abs(deltaY) > Math.abs(deltaX) * 0.75) return;
+
+      // Require minimum 45px horizontal travel
+      if (Math.abs(deltaX) < 45) return;
+
+      // Avoid triggering when user interacts with inputs or select dropdowns
+      const activeEl = document.activeElement;
+      if (activeEl && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeEl.tagName)) {
+        return;
+      }
+
+      if (isSwipeIgnoredTarget(touchTarget)) {
+        return;
+      }
+
+      const mode = getActiveQuestionMode();
+      if (!mode) return;
+
+      if (deltaX < -45) {
+        // Swipe Left -> Next Question
+        navigateQuestion(1);
+      } else if (deltaX > 45) {
+        // Swipe Right -> Previous Question
+        navigateQuestion(-1);
+      }
+    }
+  }, { passive: true });
+}
+
+function setupQuestionRenderHooks() {
+  // Hook question renders to keep dock counter and highlights synced
+  ['renderCurrentDrillQuestion', 'renderCurrentDomainQuestion', 'renderCurrentExamQuestion', 'renderCurrentSmartCard'].forEach(fnName => {
+    if (typeof window[fnName] === 'function') {
+      const original = window[fnName];
+      window[fnName] = function() {
+        const res = original.apply(this, arguments);
+        updateMobileDockState();
+        return res;
+      };
+    }
+  });
+
+  // Keep synced on mode tab clicks
+  document.querySelectorAll('.mode-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      updateMobileDockState();
+      setTimeout(updateMobileDockState, 40);
+    });
+  });
+}
+
+// Global execution hooks
+window.updateMobileDockState = updateMobileDockState;
+window.navigateQuestion = navigateQuestion;
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMobileNavigation);
+} else {
+  initMobileNavigation();
+}
+
 </script>
 
   <!-- =============================================================
@@ -12819,5 +13327,27 @@ if (document.readyState === 'loading') {
       </div>
     </div>
   </div>
+
+  <!-- =============================================================
+       MOBILE FIXED NAVIGATION DOCK (Thumb Ergonomics)
+       ============================================================= -->
+  <aside id="mobile-nav-dock" class="mobile-nav-dock" aria-label="Mobile Navigation Dock">
+    <button id="mobile-dock-prev" class="mobile-dock-btn" aria-label="Previous Question" title="Previous Question">
+      <span class="mobile-dock-arrow">◀</span>
+      <span class="mobile-dock-text">Prev</span>
+    </button>
+
+    <div class="mobile-dock-center">
+      <div id="mobile-dock-counter" class="mobile-dock-counter" title="Current Question Position">1 / 356</div>
+      <button id="mobile-dock-flag" class="mobile-dock-flag-btn" title="Toggle Flag for Review" aria-label="Flag Question">
+        <span id="mobile-dock-flag-icon">⚑</span>
+      </button>
+    </div>
+
+    <button id="mobile-dock-next" class="mobile-dock-btn mobile-dock-btn-next" aria-label="Next Question" title="Next Question">
+      <span class="mobile-dock-text">Next</span>
+      <span class="mobile-dock-arrow">▶</span>
+    </button>
+  </aside>
 </body>
 </html>
