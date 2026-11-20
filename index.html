@@ -6909,7 +6909,7 @@
     <div class="cs-search-row">
       <div class="cs-search-box-wrapper">
         <span class="cs-search-icon">🔍</span>
-        <input type="text" id="cs-search-input" placeholder="Search ports, protocols, standards, acronyms, printer steps..." />
+        <input type="text" id="cs-search-input" placeholder="Search ports, protocols, cables, RJ-45, coax, fiber, standards, acronyms..." />
         <button id="cs-search-clear" title="Clear search" style="display: none;">✕</button>
       </div>
       <div id="cs-search-stats" class="cs-search-stats">Showing all 20 reference cards</div>
@@ -6938,7 +6938,7 @@
         <button class="cs-jump-pill" data-target="cs-sec-storage">💽 Storage</button>
         <button class="cs-jump-pill" data-target="cs-sec-ram">🧠 RAM</button>
         <button class="cs-jump-pill" data-target="cs-sec-diag-tools">🧰 Diagnostic Tools</button>
-        <button class="cs-jump-pill" data-target="cs-sec-ports-quickref">📋 Port Quick Ref</button>
+        <button class="cs-jump-pill" data-target="cs-sec-cable-types">🔌 Cable Types & Jacks</button>
       </div>
     </div>
   </div>
@@ -7130,14 +7130,39 @@
             <td><span class="cs-badge cs-badge-sec">Encrypted</span></td>
             <td>Microsoft proprietary graphical remote desktop administration session.</td>
           </tr>
+          <tr>
+            <td><strong>49</strong></td>
+            <td><strong>TACACS+</strong> (Terminal Access)</td>
+            <td><span class="cs-badge cs-badge-tcp">TCP</span></td>
+            <td><span class="cs-badge cs-badge-sec">Encrypted</span></td>
+            <td>Cisco proprietary AAA protocol for enterprise switch/router administration. Unlike RADIUS, encrypts the entire TCP payload.</td>
+          </tr>
+          <tr>
+            <td><strong>1812 / 1813</strong></td>
+            <td><strong>RADIUS</strong> (AAA Service)</td>
+            <td><span class="cs-badge cs-badge-udp">UDP</span></td>
+            <td><span class="cs-badge cs-badge-warn">Pass Encrypted</span></td>
+            <td>Centralized AAA authentication (1812) and accounting (1813) server. Core backend for WPA2/WPA3-Enterprise 802.1X networks.</td>
+          </tr>
+          <tr>
+            <td><strong>5060 / 5061</strong></td>
+            <td><strong>SIP</strong> (Session Initiation)</td>
+            <td><span class="cs-badge cs-badge-tcp">TCP</span> / <span class="cs-badge cs-badge-udp">UDP</span></td>
+            <td><span class="cs-badge cs-badge-neutral">5060 Plain / 5061 TLS</span></td>
+            <td>VoIP and video teleconference call setup, maintenance, and teardown signaling. (Actual voice media flows over UDP via RTP).</td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <div class="cs-tip">
-      <strong>CompTIA Exam Distractor Traps:</strong>
-      Remember plaintext vs. encrypted pairs: HTTP (80) vs. HTTPS (443); Telnet (23) vs. SSH (22); LDAP (389) vs. LDAPS (636); POP3 (110) vs. POP3S (995); IMAP (143) vs. IMAPS (993); SMTP (25) vs. SMTPS (465/587).
-      Also remember: <strong>SFTP</strong> uses SSH on port 22, whereas <strong>FTPS</strong> uses FTP over SSL on port 990.
+      <strong>CompTIA Exam Distractor Traps & Key Port Rules:</strong><br/>
+      • <strong>Plaintext vs. Encrypted Security Pairs:</strong> HTTP (80) vs. HTTPS (443); Telnet (23) vs. SSH (22); LDAP (389) vs. LDAPS (636); POP3 (110) vs. POP3S (995); IMAP (143) vs. IMAPS (993); SMTP (25) vs. SMTPS (465/587).<br/>
+      • <strong>SFTP vs. FTPS:</strong> <strong>SFTP</strong> runs over SSH on port <strong>22</strong>. <strong>FTPS</strong> runs over FTP with SSL/TLS on port <strong>990</strong> (or 21 with explicit TLS).<br/>
+      • <strong>SNMP Queries vs. Traps:</strong> Port <strong>161</strong> = SNMP manager queries/polls agent. Port <strong>162</strong> = SNMP agent sends unprompted trap notifications to manager.<br/>
+      • <strong>DHCP Server vs. Client:</strong> Port <strong>67</strong> = DHCP server listening. Port <strong>68</strong> = DHCP client listening.<br/>
+      • <strong>AAA Protocols:</strong> <strong>RADIUS</strong> (UDP 1812/1813) encrypts password only; <strong>TACACS+</strong> (TCP 49, Cisco) encrypts full packet payload.<br/>
+      • <strong>VoIP Signaling vs. Media:</strong> <strong>SIP</strong> (5060/5061) controls call setup and tear-down; <strong>RTP</strong> (UDP dynamic high ports) carries the actual real-time audio stream.
     </div>
   </section>
 
@@ -8594,56 +8619,253 @@
   </section>
 
   <!-- =============================================================
-       SECTION 20: ESSENTIAL TCP/UDP PORT NUMBERS QUICK REFERENCE
+       SECTION 20: COMPREHENSIVE CABLE TYPES, MODULAR JACKS & STANDARDS
        ============================================================= -->
-  <section id="cs-sec-ports-quickref" class="cs-card">
+  <section id="cs-sec-cable-types" class="cs-card">
     <div class="cs-card-header">
       <h3 class="cs-card-title">
-        <span>📋 20. Essential TCP/UDP Port Numbers Quick Reference</span>
+        <span>🔌 20. Cable Types, Modular Jacks & Wiring Standards</span>
       </h3>
-      <span class="cs-card-badge">Domain 2.0 Networking</span>
+      <span class="cs-card-badge">Domain 3.0 Hardware & 2.0 Networking</span>
     </div>
     <p style="font-size: 0.85rem; color: var(--text-muted);">
-      High-density summary of all ports tested in CompTIA Core 1 (220-1201) for rapid memorization drills.
+      Definitive CompTIA A+ Core 1 reference for RJ-45, RJ-11, RJ-48C, Coaxial (RG-6/RG-59/F-Type/BNC), Fiber polish (APC vs. UPC), Serial (DB-9/Rollover), and Active vs. Passive Converters.
     </p>
 
+    <!-- TABLE 1: MODULAR NETWORK & TELECOM CONNECTORS -->
+    <h4 style="font-size: 0.95rem; color: var(--accent-sky); margin: 16px 0 8px 0; font-weight: 700;">
+      📦 1. Modular Copper Jacks, Plugs & Serial Cables
+    </h4>
     <div class="cs-table-wrap">
       <table class="cs-table">
         <thead>
           <tr>
-            <th>Port #</th>
-            <th>Protocol</th>
-            <th>Type</th>
-            <th>Encrypted?</th>
-            <th>Short Description</th>
+            <th>Connector / Cable</th>
+            <th>Form Factor & Pins</th>
+            <th>Primary Media & Standards</th>
+            <th>CompTIA Exam Purpose & Distinctions</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td><strong>20 / 21</strong></td><td>FTP</td><td>TCP</td><td>No</td><td>File Transfer (Data=20, Control=21)</td></tr>
-          <tr><td><strong>22</strong></td><td>SSH / SFTP</td><td>TCP</td><td>Yes</td><td>Secure Shell & Secure File Transfer</td></tr>
-          <tr><td><strong>23</strong></td><td>Telnet</td><td>TCP</td><td>No</td><td>Unencrypted remote terminal</td></tr>
-          <tr><td><strong>25</strong></td><td>SMTP</td><td>TCP</td><td>No</td><td>Simple Mail Transfer (send mail)</td></tr>
-          <tr><td><strong>53</strong></td><td>DNS</td><td>UDP/TCP</td><td>No</td><td>Domain Name System (name resolution)</td></tr>
-          <tr><td><strong>67 / 68</strong></td><td>DHCP</td><td>UDP</td><td>No</td><td>Dynamic IP configuration (Srv=67, Cli=68)</td></tr>
-          <tr><td><strong>69</strong></td><td>TFTP</td><td>UDP</td><td>No</td><td>Trivial FTP (PXE boot, no auth)</td></tr>
-          <tr><td><strong>80</strong></td><td>HTTP</td><td>TCP</td><td>No</td><td>World Wide Web plaintext</td></tr>
-          <tr><td><strong>88</strong></td><td>Kerberos</td><td>TCP/UDP</td><td>Yes</td><td>Active Directory authentication</td></tr>
-          <tr><td><strong>110</strong></td><td>POP3</td><td>TCP</td><td>No</td><td>Download mail (delete from srv)</td></tr>
-          <tr><td><strong>123</strong></td><td>NTP</td><td>UDP</td><td>No</td><td>Network Time Protocol (clock sync)</td></tr>
-          <tr><td><strong>137-139</strong></td><td>NetBIOS</td><td>UDP/TCP</td><td>No</td><td>Legacy Windows LAN sharing</td></tr>
-          <tr><td><strong>143</strong></td><td>IMAP4</td><td>TCP</td><td>No</td><td>Retrieve mail (sync on srv)</td></tr>
-          <tr><td><strong>161 / 162</strong></td><td>SNMP</td><td>UDP</td><td>v3 Yes</td><td>Device monitoring (Poll=161, Trap=162)</td></tr>
-          <tr><td><strong>389</strong></td><td>LDAP</td><td>TCP</td><td>No</td><td>Directory service queries</td></tr>
-          <tr><td><strong>443</strong></td><td>HTTPS</td><td>TCP</td><td>Yes</td><td>Encrypted web traffic (TLS/SSL)</td></tr>
-          <tr><td><strong>445</strong></td><td>SMB</td><td>TCP</td><td>No</td><td>Direct Windows file/print sharing</td></tr>
-          <tr><td><strong>465 / 587</strong></td><td>SMTPS</td><td>TCP</td><td>Yes</td><td>Secure SMTP (587=STARTTLS, 465=SSL)</td></tr>
-          <tr><td><strong>548</strong></td><td>AFP</td><td>TCP</td><td>No</td><td>Apple Filing Protocol (macOS LAN)</td></tr>
-          <tr><td><strong>636</strong></td><td>LDAPS</td><td>TCP</td><td>Yes</td><td>LDAP over SSL (encrypted directory)</td></tr>
-          <tr><td><strong>993</strong></td><td>IMAPS</td><td>TCP</td><td>Yes</td><td>IMAP Secure over TLS/SSL</td></tr>
-          <tr><td><strong>995</strong></td><td>POP3S</td><td>TCP</td><td>Yes</td><td>POP3 Secure over TLS/SSL</td></tr>
-          <tr><td><strong>3389</strong></td><td>RDP</td><td>TCP/UDP</td><td>Yes</td><td>Microsoft Remote Desktop Protocol</td></tr>
+          <tr>
+            <td><strong>RJ-45</strong><br/><span class="cs-badge cs-badge-tcp">8P8C Modular</span></td>
+            <td>8 positions, 8 contacts (4 twisted pairs)</td>
+            <td>Unshielded (UTP) or Shielded (STP) Cat 5e, 6, 6a, 7, 8 Ethernet</td>
+            <td>Universal Ethernet LAN standard. Terminated with an <strong>RJ-45 crimper</strong> for patch cords, or seated with a <strong>punchdown tool</strong> into keystone jacks and 110-block patch panels. Shielded RJ-45 includes an external metal grounding collar for STP runs in high-EMI environments.</td>
+          </tr>
+          <tr>
+            <td><strong>RJ-11</strong><br/><span class="cs-badge cs-badge-warn">6P2C / 6P4C</span></td>
+            <td>6 positions, 2 or 4 contacts (narrower than RJ-45)</td>
+            <td>1 or 2 pair analog telephone wire (POTS), landline phone, DSL modems</td>
+            <td>Connects analog telephones, fax machines, dial-up, and DSL broadband modems (ADSL/VDSL).<br/>
+            <strong style="color: #f87171;">⚠️ Critical Exam Trap:</strong> Inserting an RJ-11 plug into an RJ-45 jack will physically bend, flatten, and permanently ruin outer pins 1 and 8 of the RJ-45 receptacle.</td>
+          </tr>
+          <tr>
+            <td><strong>RJ-48C</strong><br/><span class="cs-badge cs-badge-sec">8P8C Shielded</span></td>
+            <td>8 positions, 8 contacts (same mechanical shell as RJ-45)</td>
+            <td>Shielded Twisted Pair (STP) T1 / E1 / PRI digital leased WAN circuits</td>
+            <td>Connects a CSU/DSU (Channel Service Unit/Data Service Unit) to the telco demarcation point (SmartJack). Specifically wired using pins 1, 2 (Receive) and 4, 5 (Transmit) with full STP shielding to prevent crosstalk across carrier lines.</td>
+          </tr>
+          <tr>
+            <td><strong>DB-9 / DE-9</strong><br/><span class="cs-badge cs-badge-neutral">9-Pin D-Sub</span></td>
+            <td>9-pin D-subminiature female or male connector</td>
+            <td>RS-232 serial data communication</td>
+            <td>Out-of-band management console port connections on enterprise routers, switches, firewalls, and legacy industrial hardware/barcode scanners. Transmits serial data one bit at a time.</td>
+          </tr>
+          <tr>
+            <td><strong>Rollover Cable</strong><br/><span class="cs-badge cs-badge-tcp">Cisco / Yost</span></td>
+            <td>Flat ribbon cable with RJ-45 on one end and DB-9 / USB on the other</td>
+            <td>Reversed / Rolled serial pinout (Pin 1 &rarr; Pin 8, Pin 2 &rarr; Pin 7, etc.)</td>
+            <td>Used by technicians for initial out-of-band CLI configuration of headless network appliances. Connects a technician's laptop directly to the router/switch Console port before IP networking is configured.</td>
+          </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- TABLE 2: COAXIAL CABLES & TERMINATIONS -->
+    <h4 style="font-size: 0.95rem; color: var(--accent-sky); margin: 20px 0 8px 0; font-weight: 700;">
+      📻 2. Coaxial Cables & Connectors (RG-6 vs. RG-59 vs. RG-58)
+    </h4>
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead>
+          <tr>
+            <th>Coax Type</th>
+            <th>Impedance</th>
+            <th>Conductor Gauge</th>
+            <th>Shielding & Attenuation</th>
+            <th>Standard Connector & Exam Distinction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>RG-6</strong><br/><span class="cs-badge cs-badge-sec">Broadband Std</span></td>
+            <td><strong>75 Ohms</strong></td>
+            <td>18 AWG solid copper (thicker core)</td>
+            <td>Dual or Quad shielding (aluminum foil + copper braid). Low attenuation at high GHz frequencies.</td>
+            <td><strong>F-Type threaded connector</strong> (or compression fitting). Primary cable for <strong>DOCSIS broadband cable modems, digital cable TV (CATV), and satellite dishes</strong> over long building runs.</td>
+          </tr>
+          <tr>
+            <td><strong>RG-59</strong><br/><span class="cs-badge cs-badge-warn">Analog Short-Run</span></td>
+            <td><strong>75 Ohms</strong></td>
+            <td>20 / 22 AWG copper-clad steel (thinner core)</td>
+            <td>Single copper braid shield. High signal attenuation at frequencies above 50 MHz.</td>
+            <td><strong>BNC or F-Type</strong>. Suitable <em>only</em> for short-distance <strong>analog CCTV surveillance cameras</strong> and composite baseband video. <strong style="color: #f87171;">Cannot</strong> be used for high-bandwidth broadband Internet.</td>
+          </tr>
+          <tr>
+            <td><strong>RG-58</strong><br/><span class="cs-badge cs-badge-neutral">Legacy Thinnet</span></td>
+            <td><strong>50 Ohms</strong></td>
+            <td>20 AWG stranded or solid core</td>
+            <td>Single braid shield.</td>
+            <td><strong>BNC twist-lock connector</strong>. Used in legacy 10BASE2 "Thinnet" bus topology. Requires <strong>50-ohm terminating resistors</strong> at both physical ends of the coaxial segment to prevent signal reflection.</td>
+          </tr>
+          <tr>
+            <td><strong>F-Type Connector</strong><br/><span class="cs-badge cs-badge-neutral">Threaded Nut</span></td>
+            <td>75 Ohms</td>
+            <td>Attached to RG-6 / RG-59</td>
+            <td>Exposes solid copper center conductor as the contact pin.</td>
+            <td>Threaded screw-on or <strong>compression fitting</strong>. Used on cable modems, TV tuners, splitters, and coax wall plates. Compression fittings provide a weather-proof, moisture-tight seal for outdoor drops.</td>
+          </tr>
+          <tr>
+            <td><strong>BNC Connector</strong><br/><span class="cs-badge cs-badge-tcp">Bayonet Lock</span></td>
+            <td>50 / 75 Ohms</td>
+            <td>Attached to RG-59 / RG-58</td>
+            <td>Quarter-turn push-and-twist locking collar.</td>
+            <td>Used for analog CCTV cameras, professional SDI digital broadcast video, oscilloscope lab probes, and 10BASE2 Thinnet networks with BNC T-connectors.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLE 3: FIBER OPTIC CONNECTORS & POLISH TYPES -->
+    <h4 style="font-size: 0.95rem; color: var(--accent-sky); margin: 20px 0 8px 0; font-weight: 700;">
+      💡 3. Fiber Optic Form Factors & Ferrule Polish Standards (APC vs. UPC)
+    </h4>
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead>
+          <tr>
+            <th>Connector / Polish</th>
+            <th>Form Factor & Boot Color</th>
+            <th>Ferrule & Latch Style</th>
+            <th>Return Loss Rating</th>
+            <th>CompTIA Exam Purpose & Rules</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>LC (Local Connector)</strong></td>
+            <td>Small Form Factor (SFF)<br/>Duplex pair</td>
+            <td>1.25 mm ceramic ferrule with push-pull retaining tab (<em>"Little Connector"</em>)</td>
+            <td>-55 dB (UPC) / -65 dB (APC)</td>
+            <td>Modern standard for high-density enterprise switches, patch panels, and <strong>SFP / SFP+ optical transceivers</strong>. Replaced larger legacy SC/ST connectors.</td>
+          </tr>
+          <tr>
+            <td><strong>SC (Subscriber Connector)</strong></td>
+            <td>Standard Square body<br/>Duplex or Simplex</td>
+            <td>2.5 mm ceramic ferrule with push-pull square snap lock (<em>"Square Connector"</em>)</td>
+            <td>-55 dB (UPC) / -65 dB (APC)</td>
+            <td>Common in Gigabit enterprise patch panels, fiber modems, and FTTH optical network terminals (ONT).</td>
+          </tr>
+          <tr>
+            <td><strong>ST (Straight Tip)</strong></td>
+            <td>Round metal body<br/>Simplex</td>
+            <td>2.5 mm ceramic ferrule with bayonet twist-lock (<em>"Stick and Twist"</em>)</td>
+            <td>-40 dB to -55 dB</td>
+            <td>Legacy connector used in older multimode MMF campus backbones and industrial building automation.</td>
+          </tr>
+          <tr>
+            <td><strong>MPO / MTP</strong></td>
+            <td>Multi-fiber trunk ribbon</td>
+            <td>Rectangular ferrule housing <strong>12 or 24 individual fibers</strong></td>
+            <td>High-density trunk</td>
+            <td>High-speed aggregation uplinks for <strong>40GBASE-SR4 (QSFP+)</strong> and <strong>100GBASE-SR4 (QSFP28)</strong> data center interconnects.</td>
+          </tr>
+          <tr>
+            <td><strong>UPC (Ultra Physical Contact)</strong></td>
+            <td><strong style="color: #38bdf8;">Blue Connector Boot</strong></td>
+            <td>Flat/domed perpendicular ferrule tip polished at 90&deg;</td>
+            <td><strong>-55 dB return loss</strong></td>
+            <td>Standard for general enterprise data networks and Ethernet fiber switches. Light reflects directly back down the fiber core.</td>
+          </tr>
+          <tr>
+            <td><strong>APC (Angled Physical Contact)</strong></td>
+            <td><strong style="color: #4ade80;">Green Connector Boot</strong></td>
+            <td><strong>8-degree angled ferrule tip</strong></td>
+            <td><strong>-65 dB return loss</strong> (Superior)</td>
+            <td>Required for Fiber-to-the-Home (FTTH / PON), CATV video distribution, and long-range WDM. The 8&deg; angle causes reflected light to bounce harmlessly into the cladding rather than back into the laser diode.<br/>
+            <strong style="color: #f87171;">⚠️ EXAM MANDATE: NEVER connect an APC (Green) connector to a UPC (Blue) connector!</strong> The angle mismatch creates a severe air gap, crushes the fiber cores, and causes massive signal loss.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TABLE 4: DISPLAY ADAPTERS & CONVERTERS -->
+    <h4 style="font-size: 0.95rem; color: var(--accent-sky); margin: 20px 0 8px 0; font-weight: 700;">
+      🔄 4. Display Interfaces, Video Cables & Active vs. Passive Converters
+    </h4>
+    <div class="cs-table-wrap">
+      <table class="cs-table">
+        <thead>
+          <tr>
+            <th>Adapter / Interface</th>
+            <th>Source &rarr; Target Signal</th>
+            <th>Converter Type</th>
+            <th>External Power?</th>
+            <th>Crucial CompTIA Technical Rules</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>DisplayPort to HDMI (DP++)</strong></td>
+            <td>Digital &rarr; Digital</td>
+            <td><strong>Passive Adapter</strong></td>
+            <td>No (Bus-powered)</td>
+            <td>Works passively <strong>only</strong> if the source port supports <strong>DP++ (Dual-Mode DisplayPort)</strong>, marked with a <code>D++</code> icon. The DP++ source detects the HDMI sink and switches its internal signaling to HDMI TMDS. If the port is standard DP, an <em>active converter</em> is required.</td>
+          </tr>
+          <tr>
+            <td><strong>DVI-I to VGA</strong></td>
+            <td>Digital+Analog &rarr; Analog</td>
+            <td><strong>Passive Adapter</strong></td>
+            <td>No</td>
+            <td>Simple pin-to-pin mechanical adapter. Routes the 4 analog pins surrounding the flat blade of <strong>DVI-I</strong> directly to the analog RGB pins of the VGA DE-15 port. (<em>Cannot work with DVI-D!</em>).</td>
+          </tr>
+          <tr>
+            <td><strong>DVI-D to VGA</strong></td>
+            <td>Pure Digital &rarr; Analog</td>
+            <td><strong>Active Converter</strong></td>
+            <td>Yes / Bus-powered</td>
+            <td>Requires an internal digital-to-analog converter (DAC) processing chip. Cannot work with a passive adapter because DVI-D contains zero analog pins.</td>
+          </tr>
+          <tr>
+            <td><strong>VGA to HDMI</strong></td>
+            <td>Analog RGB &rarr; Digital TMDS</td>
+            <td><strong>Active Converter</strong></td>
+            <td><strong>Yes (USB powered)</strong></td>
+            <td>Must actively digitize analog RGB video waveforms and combine separate 3.5mm analog audio into the digital HDMI bitstream.</td>
+          </tr>
+          <tr>
+            <td><strong>USB-C to HDMI / DP</strong></td>
+            <td>USB-C &rarr; HDMI / DP</td>
+            <td><strong>Alt Mode (Alternative Mode)</strong></td>
+            <td>No (Bus-powered)</td>
+            <td>Requires the host PC/laptop USB-C port to support <strong>DisplayPort Alternate Mode (DP Alt Mode)</strong>. Allows physical USB-C pins to directly transmit native DisplayPort video streams.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CALLOUT TIP: CABLE TERMINATION & DIAGNOSTIC TOOLS -->
+    <div class="cs-tip" style="margin-top: 18px;">
+      <strong>CompTIA Cable Termination & Diagnostic Tools Quick Matcher:</strong><br/>
+      • <strong>RJ-45 / RJ-11 Crimper:</strong> Mechanically compresses modular plugs onto stripped copper twisted pair wires.<br/>
+      • <strong>Punchdown Tool (110 / 66 Block):</strong> Uses spring-loaded impact blade to seat insulated copper wires into IDC clips and trim excess ends flush in one step on patch panels and wall keystones.<br/>
+      • <strong>Cable Stripper:</strong> Safely cuts outer PVC/plenum jacket without nicking inner copper insulation.<br/>
+      • <strong>Cable Tester (Wiremap):</strong> Verifies pin-to-pin electrical continuity; detects open circuits, short circuits, crossed pairs, and split pairs.<br/>
+      • <strong>Tone Generator & Probe (Fox & Hound):</strong> Injects an audible RF tone onto a copper wire pair so an inductive amplifier wand can trace and locate the specific cable at a crowded wiring closet patch panel.<br/>
+      • <strong>TDR (Time-Domain Reflectometer):</strong> Sends electrical pulses down copper cable to measure signal reflections and calculate the exact distance to a cable break, pinch, or short.<br/>
+      • <strong>OTDR (Optical TDR):</strong> Sends laser pulses down fiber optic cable to locate breaks, micro-bends, and dirty splices with meter-level accuracy.<br/>
+      • <strong>Optical Power Meter:</strong> Measures optical light power loss in decibels (dB) to verify total link budget attenuation.
     </div>
   </section>
 
@@ -9575,6 +9797,9 @@ function jumpToCheatSheet(ref) {
     'ports': 'cs-sec-ports',
     'wifi': 'cs-sec-wifi',
     'cables': 'cs-sec-cables',
+    'cable_types': 'cs-sec-cable-types',
+    'rj45': 'cs-sec-cable-types',
+    'coax': 'cs-sec-cable-types',
     'laser': 'cs-sec-laser',
     'raid': 'cs-sec-raid',
     'connectors': 'cs-sec-connectors',
